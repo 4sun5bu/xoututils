@@ -1,5 +1,5 @@
 /*
- *  dearc.go
+ *  xarch.go
  *
  *  Copyright (c) 2020 4sun5bu
  *  Released under the MIT license.
