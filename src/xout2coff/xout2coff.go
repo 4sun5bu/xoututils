@@ -17,7 +17,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"../binlib"
+	"binlib"
 )
 
 func main() {

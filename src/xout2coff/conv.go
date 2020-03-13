@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"../binlib"
+	"binlib"
 )
 
 func assignBSS(xf *binlib.XoutFile) {
