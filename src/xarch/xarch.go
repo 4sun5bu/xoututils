@@ -3,9 +3,9 @@
  *
  *  Copyright (c) 2020 4sun5bu
  *  Released under the MIT license.
- *  See Licence.txt
+ *  See LICENSE.
  *
- *  A De-archiver of XOUT Lib
+ *  A De-archiver of XOUT Library
  *  XOUT files are extracted from lib file.
  */
 

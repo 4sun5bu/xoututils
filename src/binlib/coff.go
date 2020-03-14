@@ -1,3 +1,13 @@
+/*
+ *  xout.go
+ *
+ *  Copyright (c) 2020 4sun5bu
+ *  Released under the MIT license.
+ *  See LICENSE.
+ *
+ *  A packge to export COFF file.
+ */
+
 package binlib
 
 import (

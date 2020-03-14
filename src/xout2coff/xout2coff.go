@@ -3,10 +3,10 @@
  *
  *  Copyright (c) 2020 4sun5bu
  *  Released under the MIT license.
- *  See Licence.txt
+ *  See LICENSE.
  *
  *  A converter from XOUT to COFF
- *  Converted files can be linked by Gnu ld.
+ *  Converted files can be linked with GNU ld.
  */
 
 package main
