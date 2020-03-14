@@ -77,6 +77,7 @@ func main() {
 	if err = cf.WriteSymbTbl(); err != nil {
 		goto errhandle
 	}
+        return
 errhandle:
 	log.Fatalln(err)
 }
