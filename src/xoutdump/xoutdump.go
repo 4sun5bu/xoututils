@@ -71,7 +71,7 @@ func printSymbs(xf binlib.XoutFile) {
 	fmt.Println("Symbol table")
 	for idx, symb := range xf.SymbTbl {
 		fmt.Printf(" %4d : Seg = %3d, Type = %1d,  Val = 0x%04x, Name = %-8s \n",
-			idx, symb.SegIdx, symb.Type, symb.Value, symb.Name)
+			idx, symb.SegIdx, symb.Type, symb.Value, string(symb.Name[:]))
 	}
 	fmt.Println()
 }
