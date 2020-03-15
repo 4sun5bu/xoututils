@@ -204,6 +204,16 @@ func (xf *XoutFile) Read(file *os.File) error {
 	return nil
 }
 
+func ConvertName(bname [8]byte) string {
+	var i int
+	for i = 0; i < 8; i++ {
+		if bname[i] == 0 {
+			break
+		}
+	}
+	return string(bname[0:i])
+}
+
 /*
 func (xf *XoutFile) PrintRelocTbl() {
 	for idx := 0; idx < xf.NumRelocs; idx++ {
