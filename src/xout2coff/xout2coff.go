@@ -47,7 +47,7 @@ func main() {
 
 	// prepare
 	assignBSS(&xf)
-	addLocalSymb(&xf)
+	//addLocalSymb(&xf)
 	checkSegSymb(&xf)
 	// convert
 	convSectHdrs(&xf, &cf)

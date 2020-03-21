@@ -12,7 +12,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	"binlib"
@@ -70,6 +69,8 @@ func searchSymb(xf *binlib.XoutFile, name string) int {
 	return -1
 }
 
+/* Add symbols for reloc items using offset from segment top */
+/*
 func addLocalSymb(xf *binlib.XoutFile) {
 	nextIdx := len(xf.SymbTbl) - 1
 	for ridx, reloc := range xf.RelocTbl {
@@ -99,6 +100,22 @@ func addLocalSymb(xf *binlib.XoutFile) {
 		}
 	}
 }
+*/
+
+/* Add symbols for reloc items using offset from segment top */
+/*
+func addLocalSymb(xf *binlib.XoutFile) {
+	for _, reloc := range xf.RelocTbl {
+		if reloc.Type == binlib.XoutRelocOFF { 
+			// get offset in the segment
+			//name := convSegName(xf.SegTbl[reloc.SegIdx].Type)
+			//fmt.Println(name, searchSymb(xf, name))
+			
+			//xf.RelocTbl[ridx].SymbIdx = uint16(symIdx)
+		}
+	}
+}
+*/
 
 func convSegName(segType byte) string {
 	var name string
@@ -188,9 +205,9 @@ func convSectHdrs(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			cfSect.Fpos = sectPos + offset
 			offset += int32(seg.Length)
 		}
-		cfSect.RelocTblFpos = 0 // Set by Finalize()
+		cfSect.RelocTblFpos = 0 	// Set by Finalize()
 		cfSect.LineNumsFpos = 0
-		cfSect.NumRelocs = 0 // Set by Finalize()
+		cfSect.NumRelocs = 0 		// Set by Finalize()
 		cfSect.NumLines = 0
 		cfSect.Flags = convSegType(seg.Type)
 		cf.SectTbl = append(cf.SectTbl, cfSect)
@@ -209,11 +226,24 @@ func convSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
 	return uint32(0xffffffff)
 }
 
+func convSegSymbIdx(seg byte, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
+	segname := convSegName(xf.SegTbl[seg].Type)
+	for idx, entry := range cf.SymbTbl {
+		if symb, ok := entry.(binlib.CoffSymbEntry); ok {
+			if segname == binlib.ConvertName(symb.Name) {
+				return uint32(idx)
+			}
+		}
+	}
+	return uint32(0xffffffff)
+}
+
 func convRelocTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
-	relocType := [8]uint16{0xffff, 0x0001, 0xffff, 0x0011, 0xffff, 0x0001, 0xffff, 0x0011}
+	relocType := map[byte] uint16 {0:0xffff, 1:0x0001, 2:0xffff, 3:0x0011,
+								   4:0xffff, 5:0x0001, 6:0xffff, 7:0x0011}
 	// sort by Location
 	sort.Slice(xf.RelocTbl, func(i, j int) bool { return xf.RelocTbl[i].Location < xf.RelocTbl[j].Location })
-
+	// export to the coff reloc table
 	for seg := 0; seg < int(xf.Header.NumSegs); seg++ {
 		var cfReloc binlib.CoffRelocItem
 		for _, xReloc := range xf.RelocTbl {
@@ -222,9 +252,14 @@ func convRelocTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			}
 			cfReloc.Vaddr = uint32(xReloc.Location)
 			cfReloc.Type = relocType[xReloc.Type]
-			cfReloc.Offset = 0
+			pos := calcAddr(xf, int(xReloc.SegIdx), xReloc.Location)
+			cfReloc.Offset = uint32(xf.CodePart[pos])*256 + uint32(xf.CodePart[pos+1])
 			cfReloc.Stuff = 0x5343
-			cfReloc.SymbIdx = convSymbIdx(xReloc.SymbIdx, xf, cf)
+			if xReloc.Type == binlib.XoutRelocXOFF {
+				cfReloc.SymbIdx = convSymbIdx(xReloc.SymbIdx, xf, cf)
+			} else if xReloc.Type == binlib.XoutRelocOFF {
+				cfReloc.SymbIdx = convSegSymbIdx(xReloc.SegIdx, xf, cf) 
+			}
 			cf.RelocTbl = append(cf.RelocTbl, cfReloc)
 		}
 	}
