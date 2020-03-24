@@ -25,7 +25,6 @@ func assignBSS(xf *binlib.XoutFile) {
 			break
 		}
 	}
-	//fmt.Println(bss)
 	if bss == int(xf.Header.NumSegs) {
 		var bssSeg binlib.XoutSeg
 		bssSeg.Number = 0xff
@@ -35,17 +34,30 @@ func assignBSS(xf *binlib.XoutFile) {
 		xf.Header.NumSegs++
 	}
 	// Add memory space in the BSS segment.
-	for _, symb := range xf.SymbTbl {
+	/*
+	var symb *binlib.XoutSymbEntry
+	for idx := 0; idx < xf.NumSymbs; idx++ {
+		symb = &xf.SymbTbl[idx]
 		if symb.SegIdx == 0xff && symb.Type == binlib.XoutSymbUndefEX && symb.Value != 0 {
 			symb.Type = binlib.XoutSymbGlobal
 			symb.SegIdx = byte(bss)
 			size := symb.Value
 			symb.Value = xf.SegTbl[bss].Length
 			xf.SegTbl[bss].Length += size
-			//fmt.Printf("%2d : %8s %d %d %04X\n", idx, symb.Name, symb.Type, symb.SegIdx, symb.Value)
+			//fmt.Printf("%8s %d %d %04X\n", binlib.ConvertName(xf.SymbTbl[idx].Name), xf.SymbTbl[idx].Type, xf.SymbTbl[idx].SegIdx, xf.SymbTbl[idx].Value)
 		}
 	}
-	//fmt.Printf("bss len %d\n", xoutSegTbl[bss].Length)
+	*/
+	for idx, symb := range xf.SymbTbl {
+		if symb.SegIdx == 0xff && symb.Type == binlib.XoutSymbUndefEX && symb.Value != 0 {
+			xf.SymbTbl[idx].Type = binlib.XoutSymbGlobal
+			xf.SymbTbl[idx].SegIdx = byte(bss)
+			size := symb.Value
+			xf.SymbTbl[idx].Value = xf.SegTbl[bss].Length 	// set address
+			xf.SegTbl[bss].Length += size					
+		}
+	}
+	//fmt.Printf("bss len %d\n", xf.SegTbl[bss].Length)
 }
 
 func calcAddr(xf *binlib.XoutFile, seg int, offset uint16) uint16 {
@@ -97,21 +109,6 @@ func addLocalSymb(xf *binlib.XoutFile) {
 			}
 		} else {
 			continue
-		}
-	}
-}
-*/
-
-/* Add symbols for reloc items using offset from segment top */
-/*
-func addLocalSymb(xf *binlib.XoutFile) {
-	for _, reloc := range xf.RelocTbl {
-		if reloc.Type == binlib.XoutRelocOFF { 
-			// get offset in the segment
-			//name := convSegName(xf.SegTbl[reloc.SegIdx].Type)
-			//fmt.Println(name, searchSymb(xf, name))
-			
-			//xf.RelocTbl[ridx].SymbIdx = uint16(symIdx)
 		}
 	}
 }
@@ -338,7 +335,7 @@ func convSymbTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			cfSymb.Name = symb.Name
 			cfSymb.Value = uint32(symb.Value)
 			cfSymb.SectNo = binlib.CoffSymbSCNAbs
-			cfSymb.Type = 0
+			cfSymb.Type = 0x00
 			cfSymb.StrgClass = binlib.CoffSymbClassGlobal
 			cfSymb.NumAux = 0
 			cf.SymbTbl = append(cf.SymbTbl, cfSymb)
