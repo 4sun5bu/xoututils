@@ -48,6 +48,7 @@ func assignBSS(xf *binlib.XoutFile) {
 		}
 	}
 	*/
+	// Add memory space in the BSS segment.
 	for idx, symb := range xf.SymbTbl {
 		if symb.SegIdx == 0xff && symb.Type == binlib.XoutSymbUndefEX && symb.Value != 0 {
 			xf.SymbTbl[idx].Type = binlib.XoutSymbGlobal
@@ -223,8 +224,8 @@ func convSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
 	return uint32(0xffffffff)
 }
 
-func convSegSymbIdx(seg byte, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
-	segname := convSegName(xf.SegTbl[seg].Type)
+func convSegSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
+	segname := convSegName(xf.SegTbl[xIdx].Type)
 	for idx, entry := range cf.SymbTbl {
 		if symb, ok := entry.(binlib.CoffSymbEntry); ok {
 			if segname == binlib.ConvertName(symb.Name) {
@@ -255,7 +256,7 @@ func convRelocTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			if xReloc.Type == binlib.XoutRelocXOFF {
 				cfReloc.SymbIdx = convSymbIdx(xReloc.SymbIdx, xf, cf)
 			} else if xReloc.Type == binlib.XoutRelocOFF {
-				cfReloc.SymbIdx = convSegSymbIdx(xReloc.SegIdx, xf, cf) 
+				cfReloc.SymbIdx = convSegSymbIdx(xReloc.SymbIdx, xf, cf) 
 			}
 			cf.RelocTbl = append(cf.RelocTbl, cfReloc)
 		}
