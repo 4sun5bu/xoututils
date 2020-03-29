@@ -8,9 +8,9 @@
  This software is released under the MIT License, see LICENSE.
 
 ## Commands
-- **xout2coff** converts XOUT to Z8k-COFF
-- **xarch** extracts XOUT files from libray  
-- **xoutdump** shows information about the file structure, relocations and symbols.  
+- **xout2coff** converts XOUT to Z8k-COFF.
+- **xarch** extracts XOUT files from a libray.  
+- **xoutdump** shows information about file structure, relocations and symbols.  
 
 These commands take one filename, such as `xout2coff xxx.rel`.  
 
