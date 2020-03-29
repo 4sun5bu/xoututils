@@ -15,4 +15,4 @@
 These commands take one filename, such as `xout2coff xxx.rel`.  
 
 ## How to Build
-Set the GOPATH at the down loaded or cloned directory. In the directry type `go build xout2coff`, `go build xarch` and `go build xoutdump`. 
+Set the GOPATH at the down loaded or cloned directory. In the directory type `go build xout2coff`, `go build xarch` and `go build xoutdump`. 
