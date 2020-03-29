@@ -1,17 +1,18 @@
-# xoututils
- File convert tools for CP/M-8000 XOUT format object files.
+# Xoututils
+ File convert tools for CP/M-8000 XOUT format to Z8k-COFF format.
  The XOUT format is linkable and executable format used in CP/M-8000.
+ These tools are made for cross develping CP/M-8000 on Linux and Windows.
+ Converted COFF files can be linked by the Gnu ld linker.
 
 ## License
  This software is released under the MIT License, see LICENSE.
 
-## xout2coff
- A converter from XOUT to Z8k-COFF written in Go.
- Converted COFF files can be linked by the Gnu ld linker in binutils.
- 
-  xout2coff xxx.rel
- 
-## xarch
- A de-archiver for library file.
- 
-  xarch libxxx.a
+## Commands
+- **xout2coff** converts XOUT to Z8k-COFF
+- **xarch** extracts XOUT files from libray  
+- **xoutdump** shows information about the file structure, relocations and symbols.  
+
+These commands take one filename, such as `xout2coff xxx.rel`.  
+
+## How to Build
+Set the GOPATH at the down loaded or cloned directory. In the directry type `go build xout2coff`, `go build xarch` and `go build xoutdump`. 
