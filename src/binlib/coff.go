@@ -89,7 +89,7 @@ type CoffSymbAuxFile struct {
 	Name [18]byte
 }
 
-const CoffSymbClassLocal = byte(0x01)
+const CoffSymbClassAuto = byte(0x01)
 const CoffSymbClassGlobal = byte(0x02)
 const CoffSymbClassStatic = byte(0x03)
 const CoffSymbClassExternal = byte(0x05)

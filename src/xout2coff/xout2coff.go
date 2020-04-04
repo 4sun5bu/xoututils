@@ -48,7 +48,8 @@ func main() {
 	// prepare
 	assignBSS(&xf)
 	//addLocalSymb(&xf)
-	checkSegSymb(&xf)
+	addSegSymb(&xf)
+	addSegTopSymb(&xf)
 	// convert
 	convSectHdrs(&xf, &cf)
 	cf.CodePart = &xf.CodePart
