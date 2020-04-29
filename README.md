@@ -16,3 +16,8 @@ These commands take one filename, such as `xout2coff xxx.rel`.
 
 ## How to Build
 Set the GOPATH at the down loaded or cloned directory. In the directory type `go build xout2coff`, `go build xarch` and `go build xoutdump`. 
+
+## To Build CP/M-8000 with GNU Binutils 
+You need to convert cpmsys.rel and libcpm.a to buid CP/M-8000. I confirmed it possible to convert these two files in the **CP/M-8000 1.1** at **The Unofficial CP/M Web site**.  http://www.cpm.z80.de/download/cpm8k11.zip
+
+To conver libcpm.a, there is a simple script in the xarch directory. The script extracts xout files from a library, converts them to COFF files and makes a library file. This script makes a lot of *.rel and *.o files so I recomend to do it in a working directory only for this. The generated library file has the same name as original xout library file, and original file is renamed to preserve. 
