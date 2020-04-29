@@ -12,8 +12,8 @@
 package main
 
 import (
-	"sort"
 	"fmt"
+	"sort"
 
 	"binlib"
 )
@@ -36,18 +36,18 @@ func assignBSS(xf *binlib.XoutFile) {
 	}
 	// Add memory space in the BSS segment.
 	/*
-	var symb *binlib.XoutSymbEntry
-	for idx := 0; idx < xf.NumSymbs; idx++ {
-		symb = &xf.SymbTbl[idx]
-		if symb.SegIdx == 0xff && symb.Type == binlib.XoutSymbUndefEX && symb.Value != 0 {
-			symb.Type = binlib.XoutSymbGlobal
-			symb.SegIdx = byte(bss)
-			size := symb.Value
-			symb.Value = xf.SegTbl[bss].Length
-			xf.SegTbl[bss].Length += size
-			//fmt.Printf("%8s %d %d %04X\n", binlib.ConvertName(xf.SymbTbl[idx].Name), xf.SymbTbl[idx].Type, xf.SymbTbl[idx].SegIdx, xf.SymbTbl[idx].Value)
+		var symb *binlib.XoutSymbEntry
+		for idx := 0; idx < xf.NumSymbs; idx++ {
+			symb = &xf.SymbTbl[idx]
+			if symb.SegIdx == 0xff && symb.Type == binlib.XoutSymbUndefEX && symb.Value != 0 {
+				symb.Type = binlib.XoutSymbGlobal
+				symb.SegIdx = byte(bss)
+				size := symb.Value
+				symb.Value = xf.SegTbl[bss].Length
+				xf.SegTbl[bss].Length += size
+				//fmt.Printf("%8s %d %d %04X\n", binlib.ConvertName(xf.SymbTbl[idx].Name), xf.SymbTbl[idx].Type, xf.SymbTbl[idx].SegIdx, xf.SymbTbl[idx].Value)
+			}
 		}
-	}
 	*/
 	// Add memory space in the BSS segment.
 	for idx, symb := range xf.SymbTbl {
@@ -55,8 +55,8 @@ func assignBSS(xf *binlib.XoutFile) {
 			xf.SymbTbl[idx].Type = binlib.XoutSymbGlobal
 			xf.SymbTbl[idx].SegIdx = byte(bss)
 			size := symb.Value
-			xf.SymbTbl[idx].Value = xf.SegTbl[bss].Length 	// set address
-			xf.SegTbl[bss].Length += size					
+			xf.SymbTbl[idx].Value = xf.SegTbl[bss].Length // set address
+			xf.SegTbl[bss].Length += size
 		}
 	}
 	//fmt.Printf("bss len %d\n", xf.SegTbl[bss].Length)
@@ -82,7 +82,6 @@ func searchSymb(xf *binlib.XoutFile, name string) int {
 	}
 	return -1
 }
-
 
 /* Add symbols for reloc items using offset from segment top */
 /*
@@ -129,7 +128,7 @@ func addSegTopSymb(xf *binlib.XoutFile) {
 		copy(symb.Name[:], []byte(name)[0:8])
 		xf.SymbTbl = append(xf.SymbTbl, symb)
 		xf.NumSymbs++
-	} 
+	}
 }
 
 func convSegName(segType byte) string {
@@ -188,7 +187,7 @@ func convHdr(cf *binlib.CoffFile) {
 		len(*cf.CodePart) + len(cf.RelocTbl)*binlib.CoffRelocItemLen)
 	cf.Header.NumSymbs = uint32(len(cf.SymbTbl))
 	cf.Header.OptHdrLen = 0
-	cf.Header.Flags = 0x2204 // Z8002 non-segmented, for now
+	cf.Header.Flags = 0x2205 // Z8002 non-segmented, for now
 }
 
 func convSegType(segType byte) uint32 {
@@ -221,9 +220,9 @@ func convSectHdrs(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			cfSect.Fpos = sectPos + offset
 			offset += int32(seg.Length)
 		}
-		cfSect.RelocTblFpos = 0 	// Set by Finalize()
+		cfSect.RelocTblFpos = 0 // Set by Finalize()
 		cfSect.LineNumsFpos = 0
-		cfSect.NumRelocs = 0 		// Set by Finalize()
+		cfSect.NumRelocs = 0 // Set by Finalize()
 		cfSect.NumLines = 0
 		cfSect.Flags = convSegType(seg.Type)
 		cf.SectTbl = append(cf.SectTbl, cfSect)
@@ -241,6 +240,7 @@ func convSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
 	}
 	return uint32(0xffffffff)
 }
+
 /*
 func convSegTopSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) uint32 {
 	segname := convSegName(xf.SegTbl[xIdx].Type)
@@ -267,8 +267,8 @@ func convSegTopSymbIdx(xIdx uint16, xf *binlib.XoutFile, cf *binlib.CoffFile) ui
 }
 
 func convRelocTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
-	relocType := map[byte] uint16 {0:0xffff, 1:0x0001, 2:0xffff, 3:0x0011,
-								   4:0xffff, 5:0x0001, 6:0xffff, 7:0x0011}
+	relocType := map[byte]uint16{0: 0xffff, 1: 0x0001, 2: 0xffff, 3: 0x0011,
+		4: 0xffff, 5: 0x0001, 6: 0xffff, 7: 0x0011}
 	// sort by Location
 	sort.Slice(xf.RelocTbl, func(i, j int) bool { return xf.RelocTbl[i].Location < xf.RelocTbl[j].Location })
 	// export to the coff reloc table
@@ -286,7 +286,7 @@ func convRelocTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			if xReloc.Type == binlib.XoutRelocXOFF {
 				cfReloc.SymbIdx = convSymbIdx(xReloc.SymbIdx, xf, cf)
 			} else if xReloc.Type == binlib.XoutRelocOFF {
-				cfReloc.SymbIdx = convSegTopSymbIdx(xReloc.SymbIdx, xf, cf) 
+				cfReloc.SymbIdx = convSegTopSymbIdx(xReloc.SymbIdx, xf, cf)
 			}
 			cf.RelocTbl = append(cf.RelocTbl, cfReloc)
 		}
@@ -333,16 +333,16 @@ func convSymbTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 		cfSymb.StrgClass = binlib.CoffSymbClassStatic
 		cfSymb.NumAux = 1
 		cf.SymbTbl = append(cf.SymbTbl, cfSymb)
-		
+
 		var sectAuxSymb binlib.CoffSymbAuxSect
 		sectAuxSymb.Length = uint32(xf.SegTbl[symb.SegIdx].Length)
 		sectAuxSymb.NumLines = 0
-		sectAuxSymb.NumRelocs = 0 
+		sectAuxSymb.NumRelocs = 0
 		for _, reloc := range xf.RelocTbl {
-			if reloc.SegIdx	!= symb.SegIdx {
+			if reloc.SegIdx != symb.SegIdx {
 				continue
 			}
-			sectAuxSymb.NumRelocs++ 
+			sectAuxSymb.NumRelocs++
 		}
 		cf.SymbTbl = append(cf.SymbTbl, sectAuxSymb)
 	}
@@ -384,7 +384,7 @@ func convSymbTbl(xf *binlib.XoutFile, cf *binlib.CoffFile) {
 			cf.SymbTbl = append(cf.SymbTbl, cfSymb)
 		default:
 		}
-	}	
+	}
 }
 
 func finalize(xf *binlib.XoutFile, cf *binlib.CoffFile) {
